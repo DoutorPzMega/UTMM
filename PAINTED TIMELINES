@@ -1,0 +1,277 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local ws = game:GetService("Workspace")
+local pls = game:GetService("Players")
+local rs = game:GetService("RunService")
+local lg = game:GetService("Lighting")
+local RS = game:GetService("ReplicatedStorage")
+local cl = pls.LocalPlayer
+local char = workspace:FindFirstChild(cl.Name)
+
+local function getCharacter()
+	return cl.Character or cl.CharacterAdded:Wait()
+end
+
+local var = {
+	godmode,
+	hitaura,
+	noatk,
+}
+
+local Window = Rayfield:CreateWindow({
+   Name = "Painted Timelines Hub",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Idk what to put here lol",
+   LoadingSubtitle = "by Chaos_Utmm",
+   ShowText = "Painted Timeline", -- for mobile users to unhide rayfield, change if you'd like
+   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = false,
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "Painted Timelines Hub"
+   },
+
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+
+   KeySystem = false,
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Hello"}
+   }
+})
+
+local function teleportTo(part)
+	local character = getCharacter()
+	local root = character:WaitForChild("HumanoidRootPart", 3)
+	if not root then return end
+
+	root.CFrame = part.CFrame + Vector3.new(0, 5, 0)
+end
+
+local Tab = Window:CreateTab("Teleports", 8763582315) -- Title, Image
+
+local MiscSection = Tab:CreateSection("Misc")
+
+local GreenDoorButton = Tab:CreateButton({
+   Name = "Green Door (1/50 for lavender badge)",
+   Callback = function()
+        teleportTo(workspace["Ashley's stuff"].room_17["room_forgotten."]["0"].Door.Base)
+   end,
+})
+
+local LimboButton = Tab:CreateButton({
+   Name = "Limbo",
+   Callback = function()
+        teleportTo(workspace["Ashley's stuff"].room_17["room_forgotten."].Limbo)
+   end,
+})
+
+local GamerShrine = Tab:CreateButton({
+   Name = "Gamer Entity Shrine",
+   Callback = function()
+        teleportTo(workspace.GamerEntityShrine.DONATIONHITBOX)
+   end,
+})
+
+local NightmareShrine = Tab:CreateButton({
+   Name = "Nightmare Shrine",
+   Callback = function()
+        teleportTo(workspace["Nightmare Shrine"].DONATIONHITBOX)
+   end,
+})
+
+
+local CraftSection = Tab:CreateSection("Craft")
+
+local cbotoes = {}
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+	if obj:IsA("BasePart") then
+		local nome = obj.Name
+
+		if nome:lower():find("craft") then
+			table.insert(cbotoes, {
+				Nome = nome,
+				Part = obj
+			})
+		end
+	end
+end
+
+table.sort(cbotoes, function(a, b)
+	return a.Nome:lower() < b.Nome:lower()
+end)
+
+for _, info in ipairs(cbotoes) do
+	Tab:CreateButton({
+		Name = info.Nome,
+		Callback = function()
+			teleportTo(info.Part)
+		end,
+	})
+end
+
+local BattlesSection = Tab:CreateSection("Battles Teleport")
+
+local botoes = {}
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+	if obj:IsA("BasePart") then
+		local scriptInside = obj:FindFirstChild("Script")
+
+		if scriptInside and scriptInside:IsA("Script") then
+			local battleValue = scriptInside:FindFirstChild("Battle")
+
+			if battleValue and battleValue:IsA("ObjectValue") and battleValue.Value then
+				local nomeBotao
+				local battleNameValue = battleValue.Value:FindFirstChild("BattleName")
+
+				if battleNameValue and battleNameValue:IsA("StringValue") then
+					nomeBotao = battleNameValue.Value
+				else
+					nomeBotao = battleValue.Value.Name
+				end
+
+				table.insert(botoes, {
+					Nome = nomeBotao,
+					Part = obj
+				})
+			end
+		end
+	end
+end
+
+table.sort(botoes, function(a, b)
+	return a.Nome:lower() < b.Nome:lower()
+end)
+
+for _, info in ipairs(botoes) do
+	Tab:CreateButton({
+		Name = info.Nome,
+		Callback = function()
+			teleportTo(info.Part)
+		end,
+	})
+end
+
+local MiscTab = Window:CreateTab("Misc", 99586768718601)
+
+local KeyPiecesF = Workspace.KeyPieces
+
+local GetUnlockedBadgePiece = MiscTab:CreateButton({
+   Name = "Get 'Unlocked' Badge",
+   Callback = function()
+        for i, v in KeyPiecesF:GetChildren() do
+            if v and v:IsA("BasePart") and v:FindFirstChild("ClickDetector") then
+                local clickpart = v.ClickDetector
+                fireclickdetector(clickpart)
+                print("a")
+            end
+        end
+        task.wait()
+        local click2 = workspace.KeyCraft.ClickDetector
+         fireclickdetector(click2)
+         print("Done")
+   end,
+})
+
+local PlayerTab = Window:CreateTab("Player", 108483430622128)
+
+local HitAuraToggle = PlayerTab:CreateToggle({
+    Name = "Hit Aura (may not work on some executors)",
+    CurrentValue = false,
+    Callback = function(Value)
+        var.hitaura = Value
+        if var.hitaura then
+            hital = rs.Stepped:Connect(function()
+                task.spawn(function()
+                    if var.bf and var.gettool then
+                        for _, v in next, var.bf:GetChildren() do
+                            if v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChildOfClass("Humanoid") and v:FindFirstChildOfClass("Humanoid").Health > 0 and not v:FindFirstChildOfClass("ForceField") then
+                                firetouchinterest(var.gettool, v:FindFirstChild("HumanoidRootPart"), 0)
+                                firetouchinterest(var.gettool, v:FindFirstChild("HumanoidRootPart"), 1)
+                                cl.Character:FindFirstChildOfClass("Tool"):Activate()
+                            end
+                        end
+                    end
+                end)
+            end)
+        else
+            if hital then
+                hital:Disconnect()
+                hital = nil
+            end
+        end
+    end,
+})
+
+local NoAtkToggle = PlayerTab:CreateToggle({
+   Name = "No Attacks",
+   CurrentValue = false,
+   Flag = "Noattack", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+      var.noatk = Value 
+      if var.noatk then 
+         for _, v in next, lg:GetChildren() do 
+            if v:IsA("BasePart") or v:IsA("Model") then 
+               v.Name = v.Name .. "~<>~6999"
+            end
+            if v.Name == "Assets" or v.Name == "Asset" then 
+               v.Name = v.Name .. "~<>~6999"
+            end
+         end
+      else
+         for _,v in next,lg:GetChildren() do 
+           if v.Name:match("~<>~6999") then 
+             v.Name = v.Name:gsub("~<>~6999","")
+           end
+         end
+      end
+   end,
+})
+
+local InfYieldToggle = PlayerTab:CreateButton({
+   Name = "Infinite Yield Loader",
+   Callback = function()
+      loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Infinite-Yield-modded-80479"))()
+   end,
+})
+
+local gameMetaTable = getrawmetatable(game)
+setreadonly(gameMetaTable, false)
+local oldMetaTable = gameMetaTable.__namecall
+local CallingScript = game:GetService("Players").LocalPlayer.PlayerGui.Handler
+
+gameMetaTable.__namecall = newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+    local script = getcallingscript()
+    local args = {...}
+
+    if var.godmode and method == "FireServer" and script == CallingScript  then
+        return nil
+    end
+    return oldMetaTable(self,...)
+end)
+
+local GodModeToggle = PlayerTab:CreateToggle({
+   Name = "Godmode",
+   CurrentValue = false,
+   Flag = "Godmode", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+      var.godmode = Value
+   end,
+})
