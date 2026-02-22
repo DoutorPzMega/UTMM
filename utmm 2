@@ -1,0 +1,300 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local ws = game:GetService("Workspace")
+local pls = game:GetService("Players")
+local rs = game:GetService("RunService")
+local lg = game:GetService("Lighting")
+local RS = game:GetService("ReplicatedStorage")
+local cl = pls.LocalPlayer
+local char = workspace:FindFirstChild(cl.Name)
+
+local function getCharacter()
+	return cl.Character or cl.CharacterAdded:Wait()
+end
+
+local var = {
+	godmode,
+	hitaura,
+	bf,
+	noatk,
+	gettool,
+	battles = {},
+}
+
+local Window = Rayfield:CreateWindow({
+   Name = "Chaos Hub",
+   Icon = 0, -- Icon in Topbar. Can use Lucide Icons (string) or Roblox Image (number). 0 to use no icon (default).
+   LoadingTitle = "Idk what to put here lol",
+   LoadingSubtitle = "by Chaos_Utmm",
+   ShowText = "Chaos Hub", -- for mobile users to unhide rayfield, change if you'd like
+   Theme = "Default", -- Check https://docs.sirius.menu/rayfield/configuration/themes
+
+   ToggleUIKeybind = "K", -- The keybind to toggle the UI visibility (string like "K" or Enum.KeyCode)
+
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = false,
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "Chaos Hub"
+   },
+
+   Discord = {
+      Enabled = false,
+      Invite = "noinvitelink",
+      RememberJoins = true
+   },
+
+   KeySystem = false,
+   KeySettings = {
+      Title = "Untitled",
+      Subtitle = "Key System",
+      Note = "No method of obtaining the key is provided",
+      FileName = "Key",
+      SaveKey = true,
+      GrabKeyFromSite = false,
+      Key = {"Hello"}
+   }
+})
+
+local function teleportTo(part)
+	local character = getCharacter()
+	local root = character:WaitForChild("HumanoidRootPart", 3)
+	if not root then return end
+
+	root.CFrame = part.CFrame + Vector3.new(0, 5, 0)
+end
+
+local Tab = Window:CreateTab("Teleports", 8763582315) -- Title, Image
+
+local MiscSection = Tab:CreateSection("Misc")
+
+local GreenDoorButton = Tab:CreateButton({
+   Name = "Green Door (1/50 for lavender badge)",
+   Callback = function()
+        teleportTo(workspace["Ashley's stuff"].room_17["room_forgotten."]["0"].Door.Base)
+   end,
+})
+
+local DustDustButton = Tab:CreateButton({
+   Name = "Dust Dust (Gold Grind)",
+   Callback = function()
+        teleportTo(workspace.Battles.DustDust)
+   end,
+})
+
+local MazeShop = Tab:CreateButton({
+   Name = "###ANTI### Shop",
+   Callback = function()
+        teleportTo(workspace.Shops["###ANTI###"])
+   end,
+})
+
+
+local LimboButton = Tab:CreateButton({
+   Name = "Limbo (Teleports You To Another Game)",
+   Callback = function()
+        teleportTo(workspace["Ashley's stuff"].room_17["room_forgotten."].Limbo)
+   end,
+})
+
+local LimboButton = Tab:CreateButton({
+   Name = "Dev Plate (Final Boss Rush)",
+   Callback = function()
+        teleportTo(workspace["Ashley's stuff"]["dev area thing"].KylerNoon.PrimaryPart)
+   end,
+})
+
+local GamerShrine = Tab:CreateButton({
+   Name = "Gamer Entity Shrine",
+   Callback = function()
+        teleportTo(workspace.GamerEntityShrine.DONATIONHITBOX)
+   end,
+})
+
+local NightmareShrine = Tab:CreateButton({
+   Name = "Nightmare Shrine",
+   Callback = function()
+        teleportTo(workspace["Nightmare Shrine"].DONATIONHITBOX)
+   end,
+})
+
+local RancerShop = Tab:CreateButton({
+   Name = "Rancer Shop",
+   Callback = function()
+        teleportTo(workspace["Shops"].RANCERSHOP)
+   end,
+})
+
+local Fursino = Tab:CreateButton({
+   Name = "Fursino",
+   Callback = function()
+        teleportTo(workspace["Furry God Grind Realm"].TPPART)
+   end,
+})
+
+local CraftSection = Tab:CreateSection("Craft")
+
+local cbotoes = {}
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+	if obj:IsA("BasePart") then
+		local nome = obj.Name
+
+		if nome:lower():find("craft") and nome ~= "Minecraft Stone Bricks" then
+			table.insert(cbotoes, {
+				Nome = nome,
+				Part = obj
+			})
+		end
+	end
+end
+
+table.sort(cbotoes, function(a, b)
+	return a.Nome:lower() < b.Nome:lower()
+end)
+
+for _, info in ipairs(cbotoes) do
+	Tab:CreateButton({
+		Name = info.Nome,
+		Callback = function()
+			teleportTo(info.Part)
+		end,
+	})
+end
+
+local BattlesSection = Tab:CreateSection("Battles")
+
+for _, obj in ipairs(workspace:GetDescendants()) do
+	if obj:IsA("BasePart") then
+		local scriptInside = obj:FindFirstChild("Script")
+
+		if scriptInside and scriptInside:IsA("Script") then
+			local battleValue = scriptInside:FindFirstChild("Battle") or scriptInside.Parent:FindFirstChild("Battle")
+
+			if battleValue and battleValue:IsA("ObjectValue") and battleValue.Value then
+				local buttonName
+				local battleNameValue = battleValue.Value:FindFirstChild("BattleName")
+
+				if battleNameValue and battleNameValue:IsA("StringValue") then
+					buttonName = battleNameValue.Value
+				else
+					buttonName = battleValue.Value.Name
+				end
+
+				table.insert(var.battles, {
+					Nome = buttonName,
+					Part = obj
+				})
+			end
+		end
+	end
+end
+
+table.sort(var.battles, function(a, b)
+	return a.Nome:lower() < b.Nome:lower()
+end)
+
+for _, boss in ipairs(var.battles) do
+	Tab:CreateButton({
+		Name = boss.Nome,
+		Callback = function()
+			teleportTo(boss.Part)
+		end,
+	})
+end
+
+local MiscTab = Window:CreateTab("Misc", 99586768718601)
+
+local KeyPiecesF = Workspace.KeyPieces
+
+local name = "Get 'Unlocked Badge' (1 click only)"
+
+local GetUnlockedBadgePiece = MiscTab:CreateButton({
+   Name = name,
+   Callback = function()
+		if name == "Get 'Unlocked Badge' (1 time only)" then
+		 for i, v in KeyPiecesF:GetChildren() do
+        	 if v and v:IsA("BasePart") and v:FindFirstChild("ClickDetector") then
+                local clickpart = v.ClickDetector
+                fireclickdetector(clickpart)
+                print("a")
+            end
+        end
+        task.wait()
+        local click2 = workspace.KeyCraft.ClickDetector
+        fireclickdetector(click2)
+        print("Done")
+
+		char.PrimaryPart.CFrame = CFrame.new(1295.26868, 828.862061, -6631.72168)
+
+		name = "Done."
+		end
+   end,
+})
+
+local Label1 = MiscTab:CreateLabel("Warning: Don't buy any items using scripts, you will get banned.", 4483362458, Color3.fromRGB(255, 0, 0), false)
+local Label2 = MiscTab:CreateLabel("Warning: Please use this script on a Private Server.", 4483362458, Color3.fromRGB(0, 255, 0), false)
+local Label3 = MiscTab:CreateLabel("Warning: If there is any error, please report it.", 4483362458, Color3.fromRGB(0, 0, 255), false)
+
+local PlayerTab = Window:CreateTab("Player", 108483430622128)
+
+local HitAuraToggle = PlayerTab:CreateToggle({
+    Name = "Hit Aura (may not work on some executors)",
+    CurrentValue = false,
+    Callback = function(Value)
+        var.hitaura = Value
+        if var.hitaura then
+            hital = rs.Stepped:Connect(function()
+                task.spawn(function()
+                    if var.bf and var.gettool then
+                        for _, v in next, var.bf:GetChildren() do
+                            if v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChildOfClass("Humanoid") and v:FindFirstChildOfClass("Humanoid").Health > 0 and not v:FindFirstChildOfClass("ForceField") then
+                                firetouchinterest(var.gettool, v:FindFirstChild("HumanoidRootPart"), 0)
+                                firetouchinterest(var.gettool, v:FindFirstChild("HumanoidRootPart"), 1)
+                                cl.Character:FindFirstChildOfClass("Tool"):Activate()
+                            end
+                        end
+                    end
+                end)
+            end)
+        else
+            if hital then
+                hital:Disconnect()
+                hital = nil
+            end
+        end
+    end,
+})
+
+local NoAtkToggle = PlayerTab:CreateToggle({
+   Name = "No Attacks",
+   CurrentValue = false,
+   Flag = "Noattack", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+      var.noatk = Value 
+      if var.noatk then 
+         for _, v in next, lg:GetChildren() do 
+            if v:IsA("BasePart") or v:IsA("Model") then 
+               v.Name = v.Name .. "~<>~6999"
+            end
+            if v.Name == "Assets" or v.Name == "Asset" then 
+               v.Name = v.Name .. "~<>~6999"
+            end
+         end
+      else
+         for _,v in next,lg:GetChildren() do 
+           if v.Name:match("~<>~6999") then 
+             v.Name = v.Name:gsub("~<>~6999","")
+           end
+         end
+      end
+   end,
+})
+
+local InfYieldToggle = PlayerTab:CreateButton({
+   Name = "Infinite Yield Loader",
+   Callback = function()
+	loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() 
+ end,
+})
